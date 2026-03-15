@@ -1,0 +1,20 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "backend project for devtinder fullstack project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "javascript"
+  ],
+  "author": "Kunal Phogat",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

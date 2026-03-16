@@ -1,25 +1,22 @@
 const express = require("express")
 const app = express()
+const {adminAuth , userAuth} = require("./midllewares/auth")
+
+app.use("/admin",adminAuth)
+app.post("/user/login",(req,res)=>{
+    res.send("user logged in successfully")
+})
+app.use("/user",userAuth,(req,res)=>{
+    res.send("sent user data")
+})
 
 
-app.use("/user",(req,res,next)=>{
-    console.log("Route handler")
-    //res.send("Response!!!")
-    next()  
-},[(req,res,next)=>{
-    console.log("Route handler 2")
-    //res.send("Response 2")
-    next()
-},(req,res,next)=>{
-    console.log("Route handler 3")
-    //res.send("Response 3")
-    next()
-},
-(req,res,next)=>{
-    console.log("Route handler 4")
-    res.send("Response 4")
-    next()
-}])
+app.get("/admin/getAllData",(req,res)=>{
+    res.send("all data sent")
+})
+app.get("/admin/delete",(req,res)=>{
+    res.send("deleted a user")
+})
 
 
 //order of routes matters a lot 

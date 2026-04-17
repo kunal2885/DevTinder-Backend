@@ -6,7 +6,7 @@ const profileRouter = require("./routes/profile")
 const requestRouter = require("./routes/request")
 const cookieParser = require("cookie-parser")
 const userRouter = require("./routes/user")
-const PORT = process.env.PORT || 3000;
+//const PORT = process.env.PORT || 3000;
 
 app.use(express.json())
 app.use(cookieParser())
@@ -19,8 +19,8 @@ connectDb().then(()=>{
     console.log("Database connected successfully")
     
 
-    app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    app.listen(8088, () => {
+    console.log(`Server running on port 8088`);
 });
 }).catch((err)=>{
     console.error("Database did not connect")

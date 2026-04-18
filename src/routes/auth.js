@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt")
 const cookieParser = require("cookie-parser")
 const validator = require("validator")
 const {validateSignup} = require("../utils/validator")
+const crypto = require("crypto")
 
 authRouter.post("/signup",async (req,res)=>{
     //validate the data of signup api
@@ -59,12 +60,64 @@ authRouter.post("/login", async (req,res)=>{
     }
 })
 
-//POST /logout api
+
 authRouter.post("/logout",(req,res)=>{
     res.cookie("mycookie",null,{
         expires : new Date(Date.now())
     })
     res.send("logged out successfuly")
 })
+
+authRouter.post("/forgot-password", async (req,res)=>{
+    const {emailid ,  newPassword} = req.body
+    const token = req.body.token?.trim();
+    //phase 1 : generation of token , if email is given
+    try{if(emailid){
+        const user = await User.findOne({emailid})
+        if(!user){
+            return res.status(400).json({message : "your email is not registered, please signup"})
+        }
+        console.log(user)
+        const resetToken = crypto.randomBytes(32).toString("hex")
+        const resetTokenExpiry = Date.now() + 30 * 60* 1000
+        user.resetToken = resetToken
+        console.log("generated token :",resetToken)
+        user.resetTokenExpiry = resetTokenExpiry
+        console.log(resetTokenExpiry)
+        await user.save()
+        return res.json({
+            message : "token generated",
+            token : resetToken
+        })
+
+    }
+    //phase 2 : resetting of password
+    if(token && newPassword) {
+        console.log("token from body :",token)
+        const user = await User.findOne({resetToken : token,
+            resetTokenExpiry : {$gt : Date.now()}
+        } )
+        console.log("User from DB:", user);
+        if(!user){
+            return res.status(400).json({message : "token expired"})
+        }
+        const hashedPassword = await bcrypt.hash(newPassword,10)
+        user.password = hashedPassword
+        user.resetToken = undefined
+        user.resetTokenExpiry = undefined
+        await user.save()
+        return res.json({message : "password successfully reseted"})
+    }
+     return res.status(400).json({
+      message: "Provide either email OR token + newPassword"
+    });
+}catch(err){
+    res.status(500).json({ message: "Something went wrong" });
+}
+
+
+
+})
+
 
 module.exports = authRouter

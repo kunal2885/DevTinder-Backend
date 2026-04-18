@@ -75,6 +75,12 @@ const userSchema = new mongoose.Schema({
     about : {
         type: String,
         default : "New user on DevTinder"
+    },
+    resetToken : {
+        type : String
+    },
+    resetTokenExpiry :{
+        type : Date
     }
     
 },{
